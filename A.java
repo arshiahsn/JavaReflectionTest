@@ -12,5 +12,7 @@ public class A {
 
     public A() {
         this.B = 1;
+        this.str = "Hello, world!";
     }
+
 }
