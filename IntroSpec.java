@@ -2,6 +2,7 @@ import javax.lang.model.type.NullType;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
 import java.lang.reflect.*;
+import java.security.InvalidParameterException;
 import java.util.Scanner;
 
 public class IntroSpec {
@@ -69,8 +70,61 @@ public class IntroSpec {
 
     }
 
+    public static String recIntoSpecArray(Object object, int depth){
+        depth++;
+        StringBuffer tabs = new StringBuffer();
+        for(int j=0;j<depth;j++)
+            tabs.append("\t");
+        StringBuffer buffer = new StringBuffer();
+        Class objectClass = object.getClass();
+        try {
+            if (objectClass.isArray()){
+                buffer.append("\n");
+                buffer.append(tabs.toString());
+                buffer.append("[");
+                for(int i=0;i<Array.getLength(object);i++){
+                    if(i>0)
+                        buffer.append(", ");
+                    Object value = Array.get(object, i);
+                    if (value.getClass().isPrimitive() ||
+                        value.getClass() == java.lang.String.class ||
+                        value.getClass() == java.lang.Long.class ||
+                        value.getClass() == java.lang.Integer.class ||
+                        value.getClass() == java.lang.Boolean.class){
+
+                        buffer.append(value);
+
+                    }
+                    else{
+                        buffer.append(recIntoSpecArray(value, depth));
+                    }
+
+                }
+                buffer.append(tabs.toString());
+                buffer.append("]\n");
+            }
+
+
+        }catch (InvalidParameterException e){
+            e.printStackTrace();
+        }
+        return buffer.toString();
+    }
+
     public static  void main(String args[]){
-        IntroSpec.fieldSpec();
+        //IntroSpec.fieldSpec();
+        String[][] someNames = {
+                {"Frodo", "Sam", "Aragorn", "Gandalf", "Boromir", "Legolas"},
+                {"Saruman", "Sauron", "Smaug"}
+        };
+
+        int[][] someNumbers = {
+                {1, 2, 3},
+                {4, 5, 6}
+        };
+
+        System.out.println(IntroSpec.recIntoSpecArray(someNames,0));
+        System.out.println(IntroSpec.recIntoSpecArray(someNumbers,0));
     }
 
 
